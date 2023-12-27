@@ -1,0 +1,67 @@
+{
+  "format": 1,
+  "restore": {
+    "E:\\HiDrive\\Dokumente\\8. GameDesign\\4. Spieletechnik I\\6. Termin\\Pong\\Pong.csproj": {}
+  },
+  "projects": {
+    "E:\\HiDrive\\Dokumente\\8. GameDesign\\4. Spieletechnik I\\6. Termin\\Pong\\Pong.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "E:\\HiDrive\\Dokumente\\8. GameDesign\\4. Spieletechnik I\\6. Termin\\Pong\\Pong.csproj",
+        "projectName": "Pong",
+        "projectPath": "E:\\HiDrive\\Dokumente\\8. GameDesign\\4. Spieletechnik I\\6. Termin\\Pong\\Pong.csproj",
+        "packagesPath": "C:\\Users\\Anwender\\.nuget\\packages\\",
+        "outputPath": "E:\\HiDrive\\Dokumente\\8. GameDesign\\4. Spieletechnik I\\6. Termin\\Pong\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Anwender\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "sfml.net": {
+              "target": "Package",
+              "version": "[2.5.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
