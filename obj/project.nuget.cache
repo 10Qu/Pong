@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "CrjainuDklddnvGTFGLgdyk6CVd/SXHt/v82OTC4VgFyNnvwXJ9RbJu0nxs/DtMpU/vgIY7uPSGGSbELyp5/NA==",
+  "success": true,
+  "projectFilePath": "E:\\HiDrive\\Dokumente\\8. GameDesign\\4. Spieletechnik I\\6. Termin\\Pong\\Pong.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Anwender\\.nuget\\packages\\csfml\\2.5.2\\csfml.2.5.2.nupkg.sha512",
+    "C:\\Users\\Anwender\\.nuget\\packages\\sfml.audio\\2.5.1\\sfml.audio.2.5.1.nupkg.sha512",
+    "C:\\Users\\Anwender\\.nuget\\packages\\sfml.graphics\\2.5.1\\sfml.graphics.2.5.1.nupkg.sha512",
+    "C:\\Users\\Anwender\\.nuget\\packages\\sfml.net\\2.5.1\\sfml.net.2.5.1.nupkg.sha512",
+    "C:\\Users\\Anwender\\.nuget\\packages\\sfml.system\\2.5.1\\sfml.system.2.5.1.nupkg.sha512",
+    "C:\\Users\\Anwender\\.nuget\\packages\\sfml.window\\2.5.1\\sfml.window.2.5.1.nupkg.sha512"
+  ],
+  "logs": []
+}
