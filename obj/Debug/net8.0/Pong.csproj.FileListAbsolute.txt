@@ -186,3 +186,4 @@ E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\obj\Debug\n
 E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\obj\Debug\net8.0\Pong.pdb
 E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\obj\Debug\net8.0\Pong.genruntimeconfig.cache
 E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\obj\Debug\net8.0\ref\Pong.dll
+E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\obj\Debug\net8.0\Pong.sourcelink.json
