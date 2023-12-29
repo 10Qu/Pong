@@ -1,3 +1,10 @@
+e:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\obj\Debug\net8.0\Pong.csproj.AssemblyReference.cache
+e:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\obj\Debug\net8.0\Pong.GeneratedMSBuildEditorConfig.editorconfig
+e:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\obj\Debug\net8.0\Pong.AssemblyInfoInputs.cache
+e:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\obj\Debug\net8.0\Pong.AssemblyInfo.cs
+e:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\obj\Debug\net8.0\Pong.csproj.CoreCompileInputs.cache
+e:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\obj\Debug\net8.0\Pong.sourcelink.json
+E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\bin\Debug\net8.0\Fonts\TitanOne.ttf
 E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\bin\Debug\net8.0\Pong.exe
 E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\bin\Debug\net8.0\Pong.deps.json
 E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\bin\Debug\net8.0\Pong.runtimeconfig.json
@@ -175,15 +182,9 @@ E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\bin\Debug\n
 E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\bin\Debug\net8.0\runtimes\win-x86\native\csfml-system.dll
 E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\bin\Debug\net8.0\runtimes\win-x86\native\csfml-window.dll
 E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\bin\Debug\net8.0\runtimes\win-x86\native\openal32.dll
-E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\obj\Debug\net8.0\Pong.csproj.AssemblyReference.cache
-E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\obj\Debug\net8.0\Pong.GeneratedMSBuildEditorConfig.editorconfig
-E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\obj\Debug\net8.0\Pong.AssemblyInfoInputs.cache
-E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\obj\Debug\net8.0\Pong.AssemblyInfo.cs
-E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\obj\Debug\net8.0\Pong.csproj.CoreCompileInputs.cache
 E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\obj\Debug\net8.0\Pong.csproj.CopyComplete
 E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\obj\Debug\net8.0\Pong.dll
 E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\obj\Debug\net8.0\refint\Pong.dll
 E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\obj\Debug\net8.0\Pong.pdb
 E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\obj\Debug\net8.0\Pong.genruntimeconfig.cache
 E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\obj\Debug\net8.0\ref\Pong.dll
-E:\HiDrive\Dokumente\8. GameDesign\4. Spieletechnik I\6. Termin\Pong\obj\Debug\net8.0\Pong.sourcelink.json
