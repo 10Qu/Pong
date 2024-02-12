@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SFML.System;
 using SFML.Window;
 using SFML.Graphics;
@@ -7,90 +7,517 @@ using System.Security;
 using System.Reflection.Metadata.Ecma335;
 using System.Linq.Expressions;
 using System.Threading.Channels;
+using System.Security.Cryptography.X509Certificates;
+using System.ComponentModel.DataAnnotations;
+using System.Net.Mime;
+using System.Dynamic;
+using System.Runtime.CompilerServices;
 
 class Program
 {
 
-    // Anpassbare Werte
+    // Adaptable values
     static uint screenx = 800;
-    static int maxSpeed = 20;
     static uint screeny = screenx * 3 / 4;
-    static int movespeed = 10;
-    static int ballspeed = 5;
+    static int PlayerMoveSpeed = 10;
+    static int maxScore = 10;
+    // Standard Min: 5 Max: 10
+    static int minBallSpeed = 5;
+    static int maxBallSpeed = 10;
 
-    // verschiedene Spiel-Level
-    enum GameLevel
-    {
-        Start,
-        Ende,
-        Standard,
-    }
-
-    static GameLevel currentLevel = GameLevel.Start;
-    static bool Ende;
-
-
-    // Objekte und Spieler
-    static RectangleShape player1 = new RectangleShape();
-    static RectangleShape player2 = new RectangleShape();
+    // Objects and Player
+    static RectangleShape playerleft = new RectangleShape();
+    static RectangleShape playerright = new RectangleShape();
     static RectangleShape devide = new RectangleShape();
     static CircleShape ball = new CircleShape();
 
+    static Vector2f ballVelocity = new Vector2f(minBallSpeed, -minBallSpeed);
+    static int scoreLeft = 0;
+    static int scoreRight = 0;
+    static RectangleShape transparent = new RectangleShape();
+
+    // Texts
+    static Font titanOneFont = new Font("Fonts/TitanOne.ttf");
+    static Text scoreRightText = new Text();
+    static Text scoreLeftText = new Text();
+    static Text Greeting = new Text();
+    static Text Congrats = new Text();
 
 
-    // Größenbestimmung in Abhängigkeit zur Bildschirmgröße
+
+    // Determination of size depending on the screen size
     static int screenyi = (int)screeny;
-    static int pY_size = screenyi / 7;
+    static int pY_size = screenyi / 6;
     static int pX_size = pY_size / 10;
 
-    
 
-    // Bestimmungen für SFML Window
+
+    // SFML Window Regulations
     static Color back = Color.Black;
     static RenderWindow sfmlWindow = new RenderWindow(new VideoMode(screenx, screeny), "June`s Pong");
     static Random r = new Random();
 
 
-    static Vector2f ballVelocity = new Vector2f(ballspeed, -ballspeed);
 
 
+    static GameState currentState = GameState.StartMenu;
+    static Level currentLevel;
+    static bool PlayerScored;
+    static bool collisionCooldown = false;
+    static bool collisionplayerleft = new bool();
+    static bool collisionplayerright = new bool();
+    static bool WinnerLeft = new bool();
+    static bool WinnerRight = new bool();
+
+    // Different StandardLevelFunctions
+    enum GameState
+    {
+        StartMenu,
+        InGame,
+        EndMenu,
+    }
+
+    enum Level
+    {
+        Standard,
+        Crazy
+        
+    }
+
+
+    //        if (player.Position.X >= 800)
+    //        {
+    //
+    //            playerleft.Position = new Vector2f(0 - pX_size + 5, playerleft.Position.Y);
+    //            RandomEvent();
+    //        }
+    //        if (player.Position.X <= (0 - pX_size))
+    //        {
+    //
+    //            playerleft.Position = new Vector2f(800 - 5, playerleft.Position.Y);
+    //            RandomEvent();
+    //        }
+
+    //    static void RandomEvent()
+    //    {
+    //        two.FillColor = new Color(r.Next(0, 256), r.Next(0, 256), r.Next(0, 256));
+    //        one.FillColor = new Color(r.Next(0, 256), r.Next(0, 256), r.Next(0, 256));
+    //        back = new Color(r.Next(0, 256), r.Next(0, 256), r.Next(0, 256));
+
+    //        two.Position = new Vector2f(r.Next(200, 600), r.Next(200, 800));
+    //        one.Position = new Vector2f(r.Next(200, 600), r.Next(200, 800));
+
+    //        two.Size = new Vector2f(r.Next(0, 250), r.Next(0, 250));
+    //        one.Size = new Vector2f(r.Next(0, 250), r.Next(0, 250));
+    //    }
+
+
+
+
+
+    static void Main()
+    {
+        sfmlWindow.SetFramerateLimit(60);
+
+        InitAllObjects();
+
+        GameLoop();
+    }
+
+
+    // General GameLoop
+    static void GameLoop()
+    {
+        while (true)
+        {
+
+            sfmlWindow.DispatchEvents();
+
+            switch (currentState)
+            {
+                case GameState.StartMenu:
+
+                    DisplayStartMenu();
+
+                    // Waiting for player input
+                    if (Keyboard.IsKeyPressed(Keyboard.Key.Space))
+                    {
+                        currentState = GameState.InGame;
+                    }
+
+                    break;
+
+                // Waiting until player scores
+                case GameState.InGame:
+
+                    //Start with standard Level0
+//                    Level0();
+                    // Random next Level until
+                    while (!WinnerLeft && !WinnerRight)
+                    {
+                        switch (currentLevel)
+                        {
+                            case Level.Standard:
+                                StandardLevelFunctions();
+                                CheckWinnerCondition();
+                                if (PlayerScored == true)
+                                {
+                                    NextLevel();
+                                }
+                                PlayerScored = false;
+                                break;
+
+                            case Level.Crazy:
+                                StandardLevelFunctions();
+                                CrazyBalls();
+                                CheckWinnerCondition();
+                                if (PlayerScored == true)
+                                {
+                                    NextLevel();
+                                }
+                                PlayerScored = false;
+                                break;
+                        }
+
+                        StandardLevelFunctions();
+                        CheckWinnerCondition();
+                    }
+
+                    break;
+
+
+                case GameState.EndMenu:
+                    GameEnd();
+                    Restart();
+                    break;
+            }
+        }
+    }
+
+    static void NextLevel()
+    {
+        // Random Background color
+        back = new Color((byte) r.Next(0, 256),(byte) r.Next(0, 256),(byte) r.Next(0, 256));
+
+        // calculate random Level
+        Random random = new Random();
+        Array values = Enum.GetValues(typeof(Level));
+        currentLevel = (Level)values.GetValue(random.Next(values.Length));
+
+        Console.WriteLine("Next Level: " + currentLevel);
+    }
+
+    static void DisplayStartMenu()
+    {
+        // StartMenu
+
+        sfmlWindow.DispatchEvents();
+
+
+
+        sfmlWindow.Clear(back);
+        sfmlWindow.Draw(playerright);
+        sfmlWindow.Draw(playerleft);
+        sfmlWindow.Draw(ball);
+        sfmlWindow.Draw(transparent);
+        
+        Greeting.DisplayedString = "Welcome!";
+        FloatRect textBounds = Greeting.GetLocalBounds();
+        Greeting.Origin = new Vector2f(textBounds.Width / 2, textBounds.Height / 2);
+        Greeting.Position = new Vector2f(screenx / 2, screeny / 2);
+        sfmlWindow.Draw(Greeting);
+
+        Greeting.DisplayedString = "Have fun playing Pong";
+        textBounds = Greeting.GetLocalBounds();
+        Greeting.Origin = new Vector2f(textBounds.Width / 2, textBounds.Height / 2);
+        Greeting.Position = new Vector2f(screenx / 2, screeny / 2 + Greeting.CharacterSize);
+        sfmlWindow.Draw(Greeting);
+
+        Greeting.DisplayedString = "made by June";
+        textBounds = Greeting.GetLocalBounds();
+        Greeting.Origin = new Vector2f(textBounds.Width / 2, textBounds.Height / 2);
+        Greeting.Position = new Vector2f(screenx / 2, screeny / 2 + 2*Greeting.CharacterSize);
+        sfmlWindow.Draw(Greeting);
+
+        Greeting.DisplayedString = "press Space to start the Game";
+        textBounds = Greeting.GetLocalBounds();
+        Greeting.Origin = new Vector2f(textBounds.Width / 2, textBounds.Height / 2);
+        Greeting.Position = new Vector2f(screenx / 2, screeny / 2 + 4*Greeting.CharacterSize);
+        sfmlWindow.Draw(Greeting);
+        
+        DrawDevider();
+
+        sfmlWindow.Display();
+
+
+    }
+
+
+    static void StandardLevelFunctions()
+    {
+        ConstrainPlayerPosition(playerleft, pY_size);
+        ConstrainPlayerPosition(playerright, pY_size);
+        MovePlayerLeft(playerleft);
+        MovePlayerRight(playerright);
+        Moveball();
+        WallCollision();
+        if (!collisionCooldown)
+        {
+            CheckCollision();
+            HandleCollision();
+        }
+
+
+
+        sfmlWindow.Clear(back);
+        sfmlWindow.Draw(scoreRightText);
+        sfmlWindow.Draw(scoreLeftText);
+        sfmlWindow.Draw(playerright);
+        sfmlWindow.Draw(playerleft);
+        sfmlWindow.Draw(ball);
+
+
+        DrawDevider();
+
+        sfmlWindow.Display();
+
+
+    }
+    static void CrazyBalls()
+    {
+        int count = 0;
+        if (collisionplayerleft || collisionplayerright)
+        {
+            count += 1;
+        }
+        if (PlayerScored)
+        {
+            count = 0;
+        }
+
+        if (count >= 5)
+        {
+            count = 0;
+            Console.WriteLine("New Ball is generated");
+            sfmlWindow.Draw(ball);
+        }
+
+
+    }
+    
+
+    static void GameEnd()
+    {
+        sfmlWindow.DispatchEvents();
+
+        sfmlWindow.Clear(back);
+        // Scoreboard
+        sfmlWindow.Draw(scoreLeftText);
+        sfmlWindow.Draw(scoreRightText);
+
+        Congrats.DisplayedString = "You won!";
+        FloatRect textBounds2 = Congrats.GetLocalBounds();
+        Congrats.Origin = new Vector2f(textBounds2.Width / 2, textBounds2.Height / 2);
+        Congrats.Position = new Vector2f(screenx / 2, screeny / 2 + Congrats.CharacterSize);
+
+        sfmlWindow.Draw(Congrats);
+        // Winner animation
+        if (WinnerLeft == true)
+        {
+            Congrats.DisplayedString = "Congratulation left Player!";
+            textBounds2 = Congrats.GetLocalBounds();
+            Congrats.Origin = new Vector2f(textBounds2.Width / 2, textBounds2.Height / 2);
+            Congrats.Position = new Vector2f(screenx / 2, screeny / 2);
+            back = new Color((byte) r.Next(0, 256),(byte) r.Next(0, 256),(byte) r.Next(0, 256));
+
+        }
+        if (WinnerRight == true)
+        {
+            Congrats.DisplayedString = "Congratulation right Player";
+            textBounds2 = Congrats.GetLocalBounds();
+            Congrats.Origin = new Vector2f(textBounds2.Width / 2, textBounds2.Height / 2);
+            Congrats.Position = new Vector2f(screenx / 2, screeny / 2);
+            back = new Color((byte) r.Next(0, 256),(byte) r.Next(0, 256),(byte) r.Next(0, 256));
+
+        }
+
+        sfmlWindow.Draw(Congrats);
+        sfmlWindow.Draw(transparent);
+
+
+        Text Restart = new Text();
+        Restart.DisplayedString = "Press: Space to Restart";
+        FloatRect textBounds = Restart.GetLocalBounds();
+        Restart.Origin = new Vector2f(textBounds.Width / 2, textBounds.Height / 2);
+        Restart.Position = new Vector2f(screenx / 2, screeny / 2);
+        Restart.CharacterSize = screeny / 20;
+        sfmlWindow.Draw(Restart);
+        
+        Restart.DisplayedString = "Press: Esc to Exit";
+        textBounds = Restart.GetLocalBounds();
+        Restart.Origin = new Vector2f(textBounds.Width / 2, textBounds.Height / 2);
+        Restart.Position = new Vector2f(screenx / 2, screeny / 2 + Restart.CharacterSize);
+        sfmlWindow.Draw(Restart);
+
+        sfmlWindow.Display();
+        Thread.Sleep(1000);
+    }
+    static void Restart()
+    {
+    }
 
     static void InitAllObjects()
     {
-        //Devider
-        devide.Size = new Vector2f(pX_size/2, pY_size / 2);
+        Console.WriteLine("Spiel wird gestartet");
+        // Devider
+        devide.Size = new Vector2f(pX_size / 2, pY_size / 2);
         devide.FillColor = Color.White;
-        devide.Position = new Vector2f(screenx / 2, screeny / 2);
 
-        //Spieler 1
-        player1.Size = new Vector2f(pX_size, pY_size);
-        player1.FillColor = Color.White;
-        player1.Position = new Vector2f(screenx / 10, screeny / 2);
+        // Transparent
+        transparent.FillColor = new Color(150, 50, 50, 50);
+        transparent.Size = new Vector2f(screenx, screeny);
 
-        //Spieler 2
-        player2.Size = new Vector2f(pX_size, pY_size);
-        player2.FillColor = Color.White;
-        player2.Position = new Vector2f(screenx - (screenx / 10), screeny / 2);
+        // Player Left
+        playerleft.Size = new Vector2f(pX_size, pY_size);
+        playerleft.FillColor = Color.White;
+        playerleft.Position = new Vector2f(screenx / 10, screeny / 2);
 
-        //Ball
+        scoreLeft = 0;
+
+        // Player Right
+        playerright.Size = new Vector2f(pX_size, pY_size);
+        playerright.FillColor = Color.White;
+        playerright.Position = new Vector2f(screenx - (screenx / 10), screeny / 2);
+
+        scoreRight = 0;
+
+        // Ball
         ball.Radius = screeny / 50;
         ball.FillColor = Color.White;
         ball.Position = new Vector2f(screenx / 2, screeny / 2);
 
         Console.WriteLine(ball.Position.X + ball.Position.Y);
 
+        // Scoring
+        scoreRightText = new Text
+        {
+            Font = titanOneFont,
+            DisplayedString = scoreRight.ToString(),
+            CharacterSize = screeny / 20,
+            Position = new Vector2f(3 * screenx / 4, 10),
+        };
+        scoreLeftText = new Text
+        {
+            Font = titanOneFont,
+            DisplayedString = scoreLeft.ToString(),
+            CharacterSize = screeny / 20,
+            Position = new Vector2f(screenx / 4, 10),
+        };
+
+        // Greeting for Game Start
+        Greeting = new Text
+        {
+            Font = titanOneFont,
+            CharacterSize = screeny / 20,
+            FillColor = new Color((byte) r.Next(0, 256),(byte) r.Next(0, 256),(byte) r.Next(0, 256)),
+        };
+
+/*         // Set text centered
+        FloatRect textBounds = Greeting.GetLocalBounds();
+        Greeting.Origin = new Vector2f(textBounds.Width / 2, textBounds.Height / 2);
+        Greeting.Position = new Vector2f(screenx / 2, screeny / 2); */
+
+        // Congrats EndScreen
+        Congrats = new Text{
+            Font = titanOneFont,
+            CharacterSize = screeny / 15,
+        };
+        
+
 
     }
 
-    static void Stop(RectangleShape player, float pY_size)
+    static void DrawDevider()
     {
-        //Wenn Bildschirm nach oben verlassen will, immer zurück schicken
+        for (int x = pY_size / 4; x < screenyi; x += pY_size)
+        {
+            devide.Position = new Vector2f(screenx / 2, x);
+            sfmlWindow.Draw(devide);
+        }
+    }
+
+    // Ball Movement
+    static void Moveball()
+    {
+        ball.Position += ballVelocity;
+
+    }
+
+
+    // Player Movement Player Left
+    static void MovePlayerLeft(RectangleShape player)
+    {
+        if (Keyboard.IsKeyPressed(Keyboard.Key.W))
+        {
+            player.Position += new Vector2f(0, -PlayerMoveSpeed);
+        }
+
+        if (Keyboard.IsKeyPressed(Keyboard.Key.S))
+        {
+            player.Position += new Vector2f(0, +PlayerMoveSpeed);
+        }
+
+    }
+    static void MovePlayerLeftUpDown()
+    {
+        if (Keyboard.IsKeyPressed(Keyboard.Key.A))
+        {
+            playerleft.Position += new Vector2f(-5, 0);
+        }
+
+        if (Keyboard.IsKeyPressed(Keyboard.Key.D))
+        {
+            playerleft.Position += new Vector2f(+5, 0);
+        }
+    }
+
+
+    // Player Movement Player Right
+    static void MovePlayerRight(RectangleShape player)
+    {
+        if (Keyboard.IsKeyPressed(Keyboard.Key.Up))
+        {
+            player.Position += new Vector2f(0, -PlayerMoveSpeed);
+        }
+
+        if (Keyboard.IsKeyPressed(Keyboard.Key.Down))
+        {
+            player.Position += new Vector2f(0, PlayerMoveSpeed);
+        }
+
+    }
+    static void MovePlayerRightUpDown()
+    {
+        if (Keyboard.IsKeyPressed(Keyboard.Key.Left))
+        {
+            playerright.Position += new Vector2f(-5, 0);
+        }
+        if (Keyboard.IsKeyPressed(Keyboard.Key.Right))
+        {
+            playerright.Position += new Vector2f(+5, 0);
+        }
+    }
+
+    // Check and prevent player from going out of boundaries
+    static void ConstrainPlayerPosition(RectangleShape player, float pY_size)
+    {
+        // check if goes to far up
         if (player.Position.Y <= (0))
         {
             player.Position = new Vector2f(player.Position.X, 0);
 
         }
-        //Wenn Bildschirm nach unten verlassen will, immer zurück schicken
+        // check if goes to far down
         if (player.Position.Y >= (screeny - pY_size))
         {
             player.Position = new Vector2f(player.Position.X, screeny - pY_size);
@@ -98,231 +525,170 @@ class Program
         }
     }
 
-    static void Gamestatus()
-    {
-        if (Ende == true)
-        {
-            ball.Position = new Vector2f(screenx / 2, screeny / 2);
-
-            Ende = false;
-        }
-    }
-
+    // Check and handles ball collision with walls
     static void WallCollision()
     {
-        //Prallt von oberer Wand ab
+        // bounce up wall
         if (ball.Position.Y < 0)
         {
             ballVelocity.Y *= -1;
         }
 
-        //Prallt von unterer Wand ab
+        // bounce down wall 
         if (ball.Position.Y > screeny - (2 + ball.Radius))
         {
             ballVelocity.Y *= -1;
         }
 
-        //Event Endee wenn Wand berührt rechts
+        // Score wall right
         if (ball.Position.X > (screenx - (2 * ball.Radius)))
         {
             ball.Position = new Vector2f(screenx / 2, screeny / 2);
-            Ende = true;
+            scoreLeft++;
+            scoreLeftText.DisplayedString = scoreLeft.ToString();
+
+            PlayerScored = true;
         }
-        //Event Endee wenn Wand berührt links
+        // Score wall left
         if (ball.Position.X < 0)
         {
             ball.Position = new Vector2f(screenx / 2, screeny / 2);
-            Ende = true;
-        }
-
-    }
-    //        if (player.Position.X >= 800)
-    //        {
-    //
-    //            player1.Position = new Vector2f(0 - pX_size + 5, player1.Position.Y);
-    //            RandomEvent();
-    //        }
-    //        if (player.Position.X <= (0 - pX_size))
-    //        {
-    //
-    //            player1.Position = new Vector2f(800 - 5, player1.Position.Y);
-    //            RandomEvent();
-    //        }
-
-//    static void RandomEvent()
-//    {
-//        two.FillColor = new Color((byte)r.Next(0, 256), (byte)r.Next(0, 256), (byte)r.Next(0, 256));
-//        one.FillColor = new Color((byte)r.Next(0, 256), (byte)r.Next(0, 256), (byte)r.Next(0, 256));
-//        back = new Color((byte)r.Next(0, 256), (byte)r.Next(0, 256), (byte)r.Next(0, 256));
-
-//        two.Position = new Vector2f((byte)r.Next(200, 600), (byte)r.Next(200, 800));
-//        one.Position = new Vector2f((byte)r.Next(200, 600), (byte)r.Next(200, 800));
-
-//        two.Size = new Vector2f((byte)r.Next(0, 250), (byte)r.Next(0, 250));
-//        one.Size = new Vector2f((byte)r.Next(0, 250), (byte)r.Next(0, 250));
-//    }
-
-    static void MoveP1(RectangleShape player)
-    {
-        if (Keyboard.IsKeyPressed(Keyboard.Key.W))
-        {
-            player.Position += new Vector2f(0, -movespeed);
-        }
-
-        if (Keyboard.IsKeyPressed(Keyboard.Key.S))
-        {
-            player.Position += new Vector2f(0, +movespeed);
+            scoreRight++;
+            scoreRightText.DisplayedString = scoreRight.ToString();
+            PlayerScored = true;
         }
 
     }
 
-    static void MoveP2(RectangleShape player)
-    {
-        if (Keyboard.IsKeyPressed(Keyboard.Key.Up))
-        {
-            player.Position += new Vector2f(0, -movespeed);
-        }
-
-        if (Keyboard.IsKeyPressed(Keyboard.Key.Down))
-        {
-            player.Position += new Vector2f(0, movespeed);
-        }
-
-    }
-
-    static void MoveP1RL()
-    {
-        if (Keyboard.IsKeyPressed(Keyboard.Key.A))
-        {
-            player1.Position += new Vector2f(-5, 0);
-        }
-
-        if (Keyboard.IsKeyPressed(Keyboard.Key.D))
-        {
-            player1.Position += new Vector2f(+5, 0);
-        }
-    }
-
-    static void Moveball()
-    {
-        ball.Position += ballVelocity;
-
-    }
-
-    static void MoveP2RL()
-    {
-        if (Keyboard.IsKeyPressed(Keyboard.Key.Left))
-        {
-            player2.Position += new Vector2f(-5, 0);
-        }
-        if (Keyboard.IsKeyPressed(Keyboard.Key.Right))
-        {
-            player2.Position += new Vector2f(+5, 0);
-        }
-    }
-
-    static bool collisionPlayer1 = new bool();
-    static bool collisionPlayer2 = new bool();
-
-    //Kollision Player and ball
+    // Collision Player and ball
     static (bool, bool) CheckCollision()
     {
         FloatRect rectball = ball.GetGlobalBounds();
-        FloatRect rectplayer1 = player1.GetGlobalBounds();
-        FloatRect rectplayer2 = player2.GetGlobalBounds();
+        FloatRect rectplayerleft = playerleft.GetGlobalBounds();
+        FloatRect rectplayer2 = playerright.GetGlobalBounds();
 
-        collisionPlayer1 = rectball.Intersects(rectplayer1);
-        collisionPlayer2 = rectball.Intersects(rectplayer2);
+        collisionplayerleft = rectball.Intersects(rectplayerleft);
+        collisionplayerright = rectball.Intersects(rectplayer2);
 
 
-        return (collisionPlayer1, collisionPlayer2);
+        return (collisionplayerleft, collisionplayerright);
     }
 
     static void HandleCollision()
     {
-
-        if (collisionPlayer1 == true)
+        if (collisionplayerleft == true)
         {
-            
-            Bounce(player1);
-            Console.WriteLine("Collision Player 1: " + collisionPlayer1);
+
+            BounceOfPlayer(playerleft);
+            Console.WriteLine("Collision Player 1: " + collisionplayerleft);
         }
 
-        if (collisionPlayer2 == true)
+        if (collisionplayerright == true)
         {
-            Bounce(player2);
-            Console.WriteLine("Collision Player 2: " + collisionPlayer2);
+            BounceOfPlayer(playerright);
+            Console.WriteLine("Collision Player 2: " + collisionplayerright);
         }
+
     }
 
-    static void Bounce(RectangleShape player)
+    static void BounceOfPlayer(RectangleShape player)
     {
         // Mittelpunkte beider Objekte errechnen
         float yCenterPosPlayer = player.Position.Y + (player.Size.Y / 2);
         float yCenterPosBall = ball.Position.Y + ball.Radius;
         // Distanz errechnen
         float yCollisionDist = yCenterPosBall - yCenterPosPlayer;
-        // bounce!
-        ballVelocity.X *= -1;
-        // Toppart collision = bounce up; Bottompart collision = bounce down
-        //ballVelocity.Y = MathF.Sign(yCollisionDist) * MathF.Abs(ballVelocity.Y); 
-        ballVelocity.Y = (maxSpeed * (yCollisionDist * 100 / pY_size)) / 100;
 
-        // Wenn Kollision in Mitte gerade wegfliegen
-//        if ( MathF.Abs(yCollisionDist) <= pY_size * 0.3)
-//        {
-//            ballVelocity.Y = 0; 
-//        }
-        // Kollision am Ende -> -/+5 Winkel
-//        else if ( MathF.Abs(yCollisionDist) < pY_size * 0.7)
-//        {
-//            ballVelocity.Y = 5;
-        // }
-        //Kollision normal -> scharfer Winkel
-//        else if ( MathF.Abs(yCollisionDist) < pY_size)
-//        {
-//            ballVelocity.Y = 8;
-//        }
-
-
-        Console.WriteLine("[Debug] Collision y-Distance: " + yCollisionDist + "Playersize: " + pY_size + " ballVelocityY: " + ballVelocity.Y);
-
-    }
-
-    static void Main()
-    {
-
-
-        sfmlWindow.SetFramerateLimit(60);
-
-        InitAllObjects();
-
-        sfmlWindow.DispatchEvents();
-
-
-        while (true)
+        // Bugcontrol if Ball is above or below player
+        if (Math.Abs(yCollisionDist) >= pY_size / 2)
         {
-            Stop(player1, pY_size);
-            Stop(player2, pY_size);
-            MoveP1(player1);
-            MoveP2(player2);
-            Moveball();
-            WallCollision();
-            CheckCollision();
-            HandleCollision();
-
-            sfmlWindow.Clear(back);
-            sfmlWindow.Draw(player2);
-            sfmlWindow.Draw(player1);
-            sfmlWindow.Draw(ball);
-            sfmlWindow.Draw(devide);
-            
-            sfmlWindow.Display();
-
+            if (yCollisionDist > 0)
+            {
+                ballVelocity.Y *= -1;
+            }
+            else
+            {
+                ballVelocity.Y = -maxBallSpeed;
+            }
+            Console.WriteLine("Bugcontrol: Case 1");
         }
 
+        else if (Math.Abs(yCollisionDist) < pY_size / 2)
+        {
+            // Abprallverhalten für X-Achse
+            if (Math.Abs(yCollisionDist) <= pY_size / 5)
+            {
+                ballVelocity.X = MathF.Sign(-ballVelocity.X) * MathF.Abs(minBallSpeed * 2);
+                Console.WriteLine("Collisioncontrol X: double");
+            }
+
+            else if (Math.Abs(yCollisionDist) <= pY_size / 3)
+            {
+                ballVelocity.X = MathF.Sign(-ballVelocity.X) * MathF.Abs(minBallSpeed * 3 / 2);
+                Console.WriteLine("Collisioncontrol X: triple");
+            }
+            else
+            {
+                ballVelocity.X = MathF.Sign(-ballVelocity.X) * MathF.Abs(minBallSpeed);
+                Console.WriteLine("Collisioncontrol X: normal");
+            }
+
+
+            // Abprallverhalten für Y-Achse
+            float calculatedSpeed = yCollisionDist * 100 / pY_size / 5;
+
+            // Begrenzung mit Mindestgeschwindigkeit & MaxGeschwindigkeit
+            if (MathF.Abs(calculatedSpeed) <= minBallSpeed)
+            {
+                ballVelocity.Y = MathF.Sign(ballVelocity.Y) * MathF.Abs(minBallSpeed);
+                Console.WriteLine("Collisioncontrol Y: minspeed");
+            }
+
+            else if (MathF.Abs(calculatedSpeed) > maxBallSpeed)
+            {
+                ballVelocity.Y = MathF.Sign(ballVelocity.Y) * MathF.Abs(maxBallSpeed);
+                Console.WriteLine("Collisioncontrol Y: maxspeed");
+            }
+            else
+            {
+                ballVelocity.Y = MathF.Sign(ballVelocity.Y) * MathF.Abs(calculatedSpeed);
+                Console.WriteLine("Collisioncontrol Y: calculated speed " + calculatedSpeed);
+            }
+
+            Console.WriteLine("[Debug] Collision y-Distance: " + yCollisionDist + " calculatedSpeed: " + calculatedSpeed + " ballVelocity.Y: " + ballVelocity.Y + " ballVelocity.X: " + ballVelocity.X);
+        }
+
+
+        // Balljumpbug verhindern
+        collisionCooldown = true;
+
+        // Timer für die Kollisionsverzögerung  
+        System.Threading.Timer timer = null;
+        timer = new System.Threading.Timer((state) =>
+        {
+            collisionCooldown = false;
+            timer.Dispose();
+        }, null, 250, System.Threading.Timeout.Infinite);
+
+
     }
 
+    static void CheckWinnerCondition()
+    {
+        if (scoreLeft >= maxScore)
+        {
+            WinnerLeft = true;
+            Console.WriteLine("Player Left wins.");
+            currentState = GameState.EndMenu;
+        }
+
+        if (scoreRight >= maxScore)
+        {
+            WinnerRight = true;
+            Console.WriteLine("Player Right wins.");
+            currentState = GameState.EndMenu;
+        }
+    }
 
 }
 
